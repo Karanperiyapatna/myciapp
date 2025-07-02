@@ -1,8 +1,9 @@
-name: Deploy to EC2
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -12,13 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ec2-13-204-80-216.ap-south-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+      - name: Copy files to EC2 via SSH
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ec2-13-204-80-216.ap-south-1.compute.amazonaws.com
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "/home/ubuntu/<your-repo>"
 
-      - name: Deploy to EC2
-        run: |
-          ssh ubuntu@ec2-13-204-80-216.ap-south-1.compute.amazonaws.com 'bash ~/deploy.sh'
+      - name: SSH to EC2 and run deploy script
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ec2-13-204-80-216.ap-south-1.compute.amazonaws.com
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/<your-repo>
+            ./deploy.sh
