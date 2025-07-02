@@ -10,16 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH to EC2 and pull latest & restart
+      - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ec2-13-204-80-216.ap-south-1.compute.amazonaws.com
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            #cd /home/ubuntu/myciapp
-            #./deploy.sh
+            echo ">> Change to app directory"
             cd /home/ubuntu/myciapp
+
+            echo ">> Mark repo as safe to fix dubious ownership issue"
+            git config --global --add safe.directory /home/ubuntu/myciapp
+
+            echo ">> Fetch latest code from origin"
             git fetch origin
+
+            echo ">> Reset local code to match origin/main"
             git reset --hard origin/main
+
+            echo ">> Restart application service"
             sudo systemctl restart myciapp
+
+            echo "✅ Deployment complete!"
+
