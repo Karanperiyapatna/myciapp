@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
 
 
-# def main():
+# def main():git 
 #     print("Hello from CI/CD to EC2!")
 #     print("checking for updates...")
 #     print("Successfully tested CD/CI pipeline")
