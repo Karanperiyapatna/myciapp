@@ -1,0 +1,9 @@
+SHA256:lTHPyT5I2Hk47oB5IqrnX891t+k6uPqsXMg35l1uMz8 periyapatnakaran@gmail.com
+
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKC0lG60U+GWz4AJU0xJh5J7jHq/ro/BkdIuU5DmOboz periyapatnakaran@gmail.com
+
+ C:\Users\karan/.ssh/id_ed25519
+
+Public Key
+C:\Users\karan/.ssh/id_ed25519.pub
