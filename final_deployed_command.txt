@@ -1,0 +1,187 @@
+Great! Let’s do this step by step.
+You already have:
+✅ A GitHub repo (with app.py)
+✅ An EC2 instance (running Ubuntu)
+✅ SSH access with webapp.pem
+
+Now, let’s set up a very simple CI/CD pipeline so that whenever you push code to GitHub, it automatically deploys to your EC2 instance.
+
+I'll explain why we do each step, and give exact commands + code snippets.
+
+✅ Step 1: Prepare your EC2 instance
+SSH into your instance:
+
+bash
+Copy
+Edit
+ssh -i "webapp.pem" ubuntu@ec2-13-204-80-216.ap-south-1.compute.amazonaws.com
+Update and install necessary packages:
+
+bash
+Copy
+Edit
+sudo apt update
+sudo apt install -y git python3-pip
+Clone your repo (replace <your-repo>):
+
+bash
+Copy
+Edit
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
+Install dependencies (if any):
+
+bash
+Copy
+Edit
+pip3 install -r requirements.txt
+If you don’t have a requirements.txt, create one locally and push:
+
+bash
+Copy
+Edit
+echo "flask" > requirements.txt
+git add requirements.txt
+git commit -m "add requirements.txt"
+git push
+✅ Step 2: Create a script on EC2 to redeploy your app
+Inside the cloned folder:
+
+bash
+Copy
+Edit
+nano deploy.sh
+Add:
+
+bash
+Copy
+Edit
+#!/bin/bash
+echo "Pulling latest code..."
+git pull origin main
+
+echo "Installing dependencies..."
+pip3 install -r requirements.txt
+
+echo "Restarting app..."
+pkill -f app.py || true
+nohup python3 app.py > app.log 2>&1 &
+Make it executable:
+
+bash
+Copy
+Edit
+chmod +x deploy.sh
+✅ Step 3: Set up GitHub Actions for CI/CD
+In your local repo:
+
+bash
+Copy
+Edit
+mkdir -p .github/workflows
+nano .github/workflows/deploy.yml
+Paste:
+
+yaml
+Copy
+Edit
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy files to EC2 via SSH
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ec2-13-204-80-216.ap-south-1.compute.amazonaws.com
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "/home/ubuntu/<your-repo>"
+
+      - name: SSH to EC2 and run deploy script
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ec2-13-204-80-216.ap-south-1.compute.amazonaws.com
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/<your-repo>
+            ./deploy.sh
+✅ Step 4: Add your SSH private key to GitHub Secrets
+On your local machine:
+
+bash
+Copy
+Edit
+cat webapp.pem
+Copy all the text.
+
+Go to GitHub → your repo → Settings → Secrets and variables → Actions → New repository secret
+
+Name: EC2_SSH_KEY
+
+Value: (paste your webapp.pem contents)
+
+✅ Step 5: Push everything to GitHub
+bash
+Copy
+Edit
+git add .github/workflows/deploy.yml
+git commit -m "Add CI/CD pipeline"
+git push
+✅ Step 6: Done! Test it
+Now, whenever you push to main:
+✅ GitHub Actions runs
+✅ Copies latest code to EC2
+✅ Runs deploy.sh to restart your app
+
+🧰 Optional improvements
+Use gunicorn or pm2 instead of nohup for production.
+
+Use Nginx as a reverse proxy.
+
+Use environment variables for secrets.
+
+Set up SSL with Let’s Encrypt.
+
+⚡ Summary of commands (quick view):
+On EC2:
+
+bash
+Copy
+Edit
+sudo apt update
+sudo apt install -y git python3-pip
+git clone https://github.com/<username>/<repo>.git
+cd <repo>
+pip3 install -r requirements.txt
+nano deploy.sh   # add script above
+chmod +x deploy.sh
+On local:
+
+bash
+Copy
+Edit
+mkdir -p .github/workflows
+nano .github/workflows/deploy.yml  # add config above
+git add .
+git commit -m "Add CI/CD"
+git push
+If you'd like,
+✅ I can generate the full deploy.sh
+✅ Sample app.py
+✅ requirements.txt
+✅ Even help set up Nginx config
+
+Just say “yes” and tell me your repo name! 🚀
