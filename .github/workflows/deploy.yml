@@ -20,7 +20,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "."
-          target: "/home/ubuntu/<your-repo>"
+          target: "/home/ubuntu/myciapp"
 
       - name: SSH to EC2 and run deploy script
         uses: appleboy/ssh-action@v0.1.10
