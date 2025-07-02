@@ -1,5 +1,7 @@
 Deploying Key from Local to Git
 
+PS D:\Karan\Personal_Work\Website_Business\Websites_Templates\Test\CDCI> ssh-keygen -t rsa -b 4096 -C "deploy_key" -f ./deploy_key.pub
+
 Your identification has been saved in ./deploy_key.pub
 Your public key has been saved in ./deploy_key.pub.pub
 The key fingerprint is:
