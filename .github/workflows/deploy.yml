@@ -17,9 +17,9 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            #cd /home/ubuntu/myciapp
+            #./deploy.sh
             cd /home/ubuntu/myciapp
-            ./deploy.sh
-            # cd /home/ubuntu/myciapp
-            # git fetch origin
-            # git reset --hard origin/main
-            # sudo systemctl restart yourapp
+            git fetch origin
+            git reset --hard origin/main
+            sudo systemctl restart myciapp
