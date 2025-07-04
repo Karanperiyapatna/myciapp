@@ -29,6 +29,9 @@ jobs:
             echo ">> Reset local code to match origin/main"
             git reset --hard origin/main
 
+            echo ">> Reload systemd daemon to avoid warning"
+            sudo systemctl daemon-reload
+
             echo ">> Restart application service"
             sudo systemctl restart myciapp
 
