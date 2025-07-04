@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello from CI/CD to EC2!, updated CD/CI pipeline. Revoked at on 04/07 11:58"
+    return "Hello from CI/CD to EC2!, updated CD/CI pipeline. Revoked at on 04/07 12:00"
 
 if __name__ == "__main__":
     app.run()
